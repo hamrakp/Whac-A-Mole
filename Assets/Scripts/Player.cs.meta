@@ -1,0 +1,25 @@
+fileFormatVersion: 2
+guid: 84c742778c665734db3f8dbdcf94421b
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - cameraShake: {instanceID: 0}
+  - menuMusic: {instanceID: 0}
+  - mole: {instanceID: 0}
+  - Mole1: {instanceID: 0}
+  - Mole2: {instanceID: 0}
+  - Mole3: {instanceID: 0}
+  - Mole4: {instanceID: 0}
+  - Mole5: {instanceID: 0}
+  - Mole6: {instanceID: 0}
+  - Mole7: {instanceID: 0}
+  - Mole8: {instanceID: 0}
+  - Mole9: {instanceID: 0}
+  - Mole: {instanceID: 0}
+  - hit: {fileID: 8300000, guid: 150d5337a9f0c6644b4dea4f37ba770f, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
