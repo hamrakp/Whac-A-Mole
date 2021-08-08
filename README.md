@@ -1,5 +1,5 @@
 # Whac-A-Mole 
-![alt text](https://github.com/Namazu34/Whac-A-Mole/Images/image.png "screen")
+![alt text](https://github.com/Namazu34/Whac-A-Mole/blob/main/Images/image.png)
 
 Typical Machine **[Whac-A-Mole](https://en.wikipedia.org/wiki/Whac-A-Mole)**.
 consists of a waist-level cabinet with a play area and screen and a large soft black mallet. The five holes in the top of the playing area are filled with small plastic moles that pop out randomly. Points are earned by slamming each mole. The faster the response, the higher the score.
