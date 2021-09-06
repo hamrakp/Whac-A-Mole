@@ -11,7 +11,7 @@ Left hand: Q, W, E, R, V
 
 Right hand: P, O, I, U, N
 
-Pause menu: esc
+Pause menu: X
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
