@@ -17,7 +17,7 @@ public class LoginMenu : MonoBehaviour
         var request = new SendAccountRecoveryEmailRequest
         {
             Email = email.text,
-            TitleId = "guess"
+            TitleId = "E0B82" // Please change this value to your own TitleId from PlayFab Game Manager
         };
 
         PlayFabClientAPI.SendAccountRecoveryEmail(request, passwordReset, Error);// Send a password reset request

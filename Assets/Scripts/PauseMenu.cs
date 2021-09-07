@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-
 public class PauseMenu : MonoBehaviour
 {
     public static bool GameISPaused = false;
-
     public GameObject pauseMenuUI;
 
     // Update is called once per frame
-    void Update()
+    void OnGUI()
     {
         if(Event.current.Equals(Event.KeyboardEvent("X"))){
-            if(GameISPaused){
+            if(GameISPaused == true){
                 Resume();
             } else {
                 Pause();

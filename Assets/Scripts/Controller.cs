@@ -47,7 +47,7 @@ public class Controller : MonoBehaviour
         // Create a login request using an ID
         var request = new LoginWithCustomIDRequest
         {
-            TitleId = "Titleid",
+            TitleId = "E0B82", // Please change this value to your own TitleId from PlayFab Game Manager
             CreateAccount = true
             // Automatic create an account in PlayFab if none is associated with our id
         };
@@ -91,7 +91,14 @@ public class Controller : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(PauseMenu.GameISPaused == true){
+                PauseMenu.Resume();
+            } else {
+                PauseMenu.Pause();
+            }
+
         countdownTime -= 1 * Time.deltaTime;// Countdown to the beginning of the game
+
         countdownText.text = countdownTime.ToString("0");
         // Set the time output to text, to an integer
         if (countdownTime <= 0) // Set to turn off the text of the initial countdown after the time has elapsed
