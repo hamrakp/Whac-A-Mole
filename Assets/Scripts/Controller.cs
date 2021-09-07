@@ -92,9 +92,11 @@ public class Controller : MonoBehaviour
     void Update()
     {
         if(PauseMenu.GameISPaused == true){
-                PauseMenu.Resume();
+                Time.timeScale = 1f;
+                PauseMenu.GameISPaused = false;
             } else {
-                PauseMenu.Pause();
+                Time.timeScale = 0f;
+                PauseMenu.GameISPaused = true;
             }
 
         countdownTime -= 1 * Time.deltaTime;// Countdown to the beginning of the game
