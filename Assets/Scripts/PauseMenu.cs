@@ -19,21 +19,14 @@ public class PauseMenu : MonoBehaviour
             }
         }       
     }
-
     public void Resume(){
         pauseMenuUI.SetActive(true);
         Time.timeScale = 1f;
         GameISPaused = false;
     }
-
     public void Pause(){
         pauseMenuUI.SetActive(false);
         Time.timeScale = 0f;
         GameISPaused = true;
-    }
-
-    public void Quit(){
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("WhacAMoleMenu");
     }
 }

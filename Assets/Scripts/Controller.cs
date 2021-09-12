@@ -93,10 +93,8 @@ public class Controller : MonoBehaviour
     {
         if(PauseMenu.GameISPaused == true){
                 Time.timeScale = 1f;
-                PauseMenu.GameISPaused = false;
             } else {
                 Time.timeScale = 0f;
-                PauseMenu.GameISPaused = true;
             }
 
         countdownTime -= 1 * Time.deltaTime;// Countdown to the beginning of the game
