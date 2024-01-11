@@ -7,134 +7,104 @@ using PlayFab.ClientModels;
 
 public class Controller : MonoBehaviour
 {
-    public GameObject moleContainer; 
+    public GameObject moleContainer;
     public GameObject countdownCanvas;
     public Player player;
-    public TextMesh text;
+    public TextMesh statusText; // Renamed from 'text' for clarity
     public Mole[] moles;
     public float spawnDuration = 3f;
     public float spawnDecrement = 0.2f;
-    public float minimumSpawnDuration = 2f;
+    public float minimumSpawnDuration = 0.5f; // Reduced to make the game more challenging over time
     public float gameTimer = 40f;
-    private float spawnTimer = 0f;
-    float countdownTime = 0f;
-    float delayTime = 5f;
+    private float spawnTimer;
+    
+    [SerializeField] private Text countdownText;
+    private float countdownTime;
+    private const float delayTime = 5f; // Made constant as it's a value that doesn't change
 
-    [SerializeField] Text countdownText; 
-
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         countdownTime = delayTime;
-        // Set the initial timer countdown to 5
-
         moles = moleContainer.GetComponentsInChildren<Mole>();
-        // Add Mole objects from the MoleContainer object to the moles field
-
-        if (countdownCanvas.activeSelf == false)
-        // Condition if the text element is inactive at the beginning of the game
-        {
-            countdownCanvas.SetActive(true);
-            // Activate the countdownCanvas object
-        }
-
+        countdownCanvas.SetActive(true);
         PlayfabLogin();
- 
     }
-    // Method to log in to playfab using the unique ID of our game title
-    void PlayfabLogin()
+
+    private void PlayfabLogin()
     {
-        // Create a login request using an ID
         var request = new LoginWithCustomIDRequest
         {
-            TitleId = "E0B82", // Please change this value to your own TitleId from PlayFab Game Manager
+            TitleId = "E0B82", 
             CreateAccount = true
-            // Automatic create an account in PlayFab if none is associated with our id
         };
-        PlayFabClientAPI.LoginWithCustomID(request, Success, Error);
-        // Login via ID using API
+        PlayFabClientAPI.LoginWithCustomID(request, OnLoginSuccess, OnLoginError);
     }
 
-    void Success(LoginResult result) { }// Method if the login to PlayFab was successful
-    void Error(PlayFabError error) { }// Method if login failed
-    void UpdateLeaderboard(UpdatePlayerStatisticsResult result) { }
- 
-    public void SendLeaderboard(int hitScore)
-    // Method for sending the score to the server
+    private void OnLoginSuccess(LoginResult result) { Debug.Log("Login Success"); }
+    private void OnLoginError(PlayFabError error) { Debug.LogError("Login Error: " + error.GenerateErrorReport()); }
+    
+    private void SendLeaderboard(int score)
     {
         var request = new UpdatePlayerStatisticsRequest
         {
-            // PlayFab request to send statistics
             Statistics = new List<StatisticUpdate>
             {
-                new StatisticUpdate// Send score to the tables with the value of the last recorded score
-                {
-                    StatisticName = "HitScore",
-                    Value = hitScore
-                },
-                 new StatisticUpdate
-                {
-                    StatisticName = "MaxScore",
-                    Value = hitScore
-                },
-                  new StatisticUpdate
-                {
-                    StatisticName = "MinScore",
-                    Value = hitScore
-                }
+                new StatisticUpdate { StatisticName = "HighScore", Value = score } // Just update the high score
             }
         };
-                PlayFabClientAPI.UpdatePlayerStatistics(request, UpdateLeaderboard, Error);
+        PlayFabClientAPI.UpdatePlayerStatistics(request, OnLeaderboardUpdate, OnLoginError);
+    }
 
-    }  
+    private void OnLeaderboardUpdate(UpdatePlayerStatisticsResult result) { Debug.Log("Leaderboard Updated"); }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if(PauseMenu.GameISPaused == true){
-                Time.timeScale = 1f;
-            } else {
-                Time.timeScale = 0f;
-            }
+        // If the game is paused or not
+        Time.timeScale = PauseMenu.GameISPaused ? 0f : 1f;
 
-        countdownTime -= 1 * Time.deltaTime;// Countdown to the beginning of the game
+        HandleCountdown();
+        HandleGameplay();
+    }
 
-        countdownText.text = countdownTime.ToString("0");
-        // Set the time output to text, to an integer
-        if (countdownTime <= 0) // Set to turn off the text of the initial countdown after the time has elapsed
+    private void HandleCountdown()
+    {
+        if (countdownTime > 0)
+        {
+            countdownTime -= Time.deltaTime;
+            countdownText.text = Mathf.CeilToInt(countdownTime).ToString();
+            return; // Exit early to avoid running gameplay code
+        }
+
+        if (countdownCanvas.activeSelf)
         {
             countdownCanvas.SetActive(false);
+        }
+    }
 
-            countdownTime = 0;
+    private void HandleGameplay()
+    {
+        if (gameTimer <= 0f)
+        {
+            FinishGame();
+            return; // Exit early if game is over
+        }
 
-            if (gameTimer > 0f)// Condition if the game is in progress
-            {
-                text.text = "Time:" + Mathf.Floor(gameTimer) + "\nScore:" + player.score;// Score and time listing
+        // Update game timer and status text
+        gameTimer -= Time.deltaTime;
+        statusText.text = $"Time: {Mathf.Floor(gameTimer)}\nScore: {player.score}";
 
-            }
+        // Handle mole spawning
+        spawnTimer -= Time.deltaTime;
+        if (spawnTimer <= 0f)
+        {
+            moles[Random.Range(0, moles.Length)].Rise();
+            spawnTimer = Mathf.Max(spawnDuration -= spawnDecrement, minimumSpawnDuration);
+        }
+    }
 
-            spawnTimer -= Time.deltaTime;
-
-            if (spawnTimer <= 0f)
-            {
-                moles[Random.Range(0, moles.Length)].Rise();
-                spawnDuration -= spawnDecrement;
-                if (spawnDuration < minimumSpawnDuration)// Condition for keeping the objects in the desired position until the next iteration
-                {
-                    spawnDuration = minimumSpawnDuration;
-                }
-
-                spawnTimer = spawnDuration;
-
-            }
-
-            gameTimer -= Time.deltaTime;
-
-            if (gameTimer <= 0f)// If the game ends
-            {
-                SendLeaderboard(player.score);// Call the method to send statistics with the recorded score parameter
-                AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("WhacAMoleMenu"); // Change the scene on the menu
-            }
-        }       
+    private void FinishGame()
+    {
+        SendLeaderboard(player.score);
+        SceneManager.LoadSceneAsync("WhacAMoleMenu"); // It's safe to call LoadSceneAsync multiple times because it won't reload if already loading
     }
 }
